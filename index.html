@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<head>
+<meta charset="UTF-8">
+<title>impl.cat auth</title>
+
+<script>
+function fail(msg) {
+  alert(msg);
+}
+
+async function post() {
+  const user = document.getElementById('user').value;
+  const pass = document.getElementById('pass').value;
+
+  if(user == "" || pass == "") {
+    fail("Empty user/pass");
+    return;
+  }
+
+  const payload = JSON.stringify({ user: user, pass: pass });
+
+  const resp = await fetch("/", {
+    method: "POST",
+    headers: new Headers({
+      'Content-Type': 'application/json',
+    }),
+    body: payload,
+  });
+  if(resp.status === 200 && (await resp.json()).ok)
+    window.location.href = "/" + user;
+  else
+    fail("Incorrect user/pass");
+}
+</script>
+</head>
+
+<body>
+<label for="user">User</label>
+<input name="user" id="user">
+
+<label for="pass">Password</label>
+<input name="pass" id="pass" type="password">
+
+<button onclick="post()">Dispatch</button>
+</body>
