@@ -41,8 +41,24 @@ const index = fs.readFile('index.html').then(buf => buf.toString('utf-8'));
 
 app.use(async ctx => {
   if(ctx.method === 'GET') {
-    ctx.body = await index;
-    return ctx.status = 200;
+    if(ctx.request.path === '/auth') {
+      const token = ctx.cookies.get(CFG.JWT_COOKIE_NAME);
+      if((token ?? '') == '') return ctx.status = 403;
+      let verified;
+      try {
+        verified = jwt.verify(token, CFG.JWT_KEY);
+      } catch(e) {
+        return ctx.status = 403;
+      }
+
+      const upstream = '127.0.0.1:' + verified.port;
+      ctx.set('X_UpstreamHost', upstream);
+
+      return ctx.status = 200;
+    } else {
+      ctx.body = await index;
+      return ctx.status = 200;
+    }
   } else if(ctx.method === 'POST') {
     if((ctx.request.body?.user ?? '') === '') return ctx.status = 400;
     if((ctx.request.body?.pass ?? '') === '') return ctx.status = 400;
