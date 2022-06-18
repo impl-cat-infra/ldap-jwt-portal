@@ -50,6 +50,8 @@ async function getIndex() {
   return tmpl;
 }
 
+const index = getIndex();
+
 app.use(async ctx => {
   if(ctx.method === 'GET') {
     if(ctx.request.path === '/auth') {
@@ -67,7 +69,7 @@ app.use(async ctx => {
 
       return ctx.status = 200;
     } else {
-      ctx.body = await getIndex();
+      ctx.body = await index;
       return ctx.status = 200;
     }
   } else if(ctx.method === 'POST') {
