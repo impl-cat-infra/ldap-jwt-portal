@@ -6,5 +6,5 @@ export const PORT_OFFSET = 10000;
 export const LDAP_REMOTE = ["ldaps://example.com"];
 export const LDAP_SCOPE = "ou=People,dc=example,dc=com";
 
-export const TITLE = "TITLE"
-export const SUBTITLE = "SUBTITLE"
+export const TITLE = "TITLE";
+export const SUBTITLE = "SUBTITLE";
