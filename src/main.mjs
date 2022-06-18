@@ -37,7 +37,18 @@ const app = new Koa();
 
 app.use(KoaBP());
 
-const index = fs.readFile('index.html').then(buf => buf.toString('utf-8'));
+const indexParams = {
+  TITLE: CFG.TITLE,
+  SUBTITLE: CFG.SUBTITLE,
+}
+
+async function getIndex() {
+  const buf = await fs.readFile('index.html');
+  let tmpl = buf.toString('utf-8');
+  for(const k in indexParams)
+    tmpl = tmpl.replace(`{{${k}}}`, indexParams[k]);
+  return tmpl;
+}
 
 app.use(async ctx => {
   if(ctx.method === 'GET') {
@@ -56,7 +67,7 @@ app.use(async ctx => {
 
       return ctx.status = 200;
     } else {
-      ctx.body = await index;
+      ctx.body = await getIndex();
       return ctx.status = 200;
     }
   } else if(ctx.method === 'POST') {

@@ -5,11 +5,15 @@
 <title>impl.cat auth</title>
 
 <script>
+let waiting = false;
+
 function fail(msg) {
   alert(msg);
 }
 
 async function post() {
+  if(waiting) return;
+
   const user = document.getElementById('user').value;
   const pass = document.getElementById('pass').value;
 
@@ -17,6 +21,9 @@ async function post() {
     fail("Empty user/pass");
     return;
   }
+
+  waiting = true;
+  document.getElementById('submit').disabled = true;
 
   const payload = JSON.stringify({ user: user, pass: pass });
 
@@ -31,16 +38,169 @@ async function post() {
     window.location.href = "/" + user;
   else
     fail("Incorrect user/pass");
+
+  waiting = false;
+  document.getElementById('submit').disabled = false;
+}
+
+function bootstrap() {
+  document.getElementById('pass').addEventListener('keydown', function(e) {
+    if(e.key === 'Enter') post();
+  });
+
+  document.getElementById('user').addEventListener('keydown', function(e) {
+    if(e.key === 'Enter') post();
+  });
 }
 </script>
+
+<style>
+body {
+  margin: 0;
+
+  padding: 20px 40px;
+  background: #333;
+
+  color: white;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: inherit;
+}
+
+h1 {
+  margin: 0;
+
+  font-size: 56px;
+  line-height: 64px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+
+  color: rgba(255,255,255,.54);
+  font-family: monospace;
+
+  margin-bottom: 40px;
+}
+
+.input-group {
+  background: #212121;
+
+  max-width: 300px;
+  color: white;
+  font-family: monospace;
+  height: 60px;
+
+  overflow: hidden;
+  border-radius: 4px;
+
+  margin-bottom: 20px;
+
+  position: relative;
+}
+
+.input-group:before {
+  width: 10px;
+  background: #313199;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  content: '';
+}
+
+.input-group:after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-shadow: rgba(0,0,0,.3) 0 4px 6px inset;
+  border-radius: 4px;
+
+  content: '';
+}
+
+.input-group label {
+  width: 100%;
+  height: 22px;
+  line-height: 16px;
+
+  font-size: 16px;
+  margin-bottom: -22px;
+  padding: 6px 15px 0 25px;
+
+  display: block;
+  opacity: .54;
+  z-index: -1;
+
+  user-select: none;
+}
+
+.input-group input {
+  display: block;
+  height: 60px;
+  padding: 22px 15px 6px 25px;
+  z-index: 1;
+  outline: none;
+  border: none;
+  width: 100%;
+  font-size: 24px;
+  background: transparent;
+  font-family: monospace;
+  color: white;
+}
+
+button {
+  display: block;
+  width: 300px;
+  max-width: 100%;
+
+  height: 40px;
+  font-size: 18px;
+  line-height: 40px;
+  padding: 0;
+  margin: 0;
+  color: white;
+
+  border: none;
+  background: #212121;
+  font-family: monospace;
+  box-shadow: rgba(0,0,0,.3) 0 4px 6px;
+
+  cursor: pointer;
+
+  transition: opacity .2s ease;
+}
+
+button:disabled {
+  opacity: .2;
+}
+</style>
 </head>
 
-<body>
-<label for="user">User</label>
-<input name="user" id="user">
+<body onload="bootstrap()">
 
-<label for="pass">Password</label>
-<input name="pass" id="pass" type="password">
+<h1>{{TITLE}}</h1>
+<h2>> {{SUBTITLE}}</h2>
 
-<button onclick="post()">Dispatch</button>
+<div class="input-group">
+  <label for="user">User</label>
+  <input name="user" id="user">
+</div>
+
+<div class="input-group">
+  <label for="pass">Password</label>
+  <input name="pass" id="pass" type="password">
+</div>
+
+<div class="button-container">
+  <button onclick="post()" id="submit">Login</button>
+</div>
 </body>
